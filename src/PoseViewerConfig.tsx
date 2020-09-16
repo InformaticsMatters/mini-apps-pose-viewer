@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { useProtein } from 'modules/protein/protein';
-import { MIMETypes } from 'services/apiTypes';
-
 import { ButtonProps, Typography } from '@material-ui/core';
-
-import CardViewConfig from './components/cardView/CardViewConfig';
-import MultiPage from './components/configuration/MultiPage';
-import DataLoader from './components/dataLoader/DataLoader';
-import ScatterplotConfig from './components/scatterplot/ScatterplotConfig';
-import { useMolecules } from './modules/molecules/molecules';
+import { MIMETypes } from '@squonk/data-tier-services';
+import {
+  CardViewConfig,
+  DataLoader,
+  MultiPage,
+  ScatterplotConfig,
+  useMolecules,
+  useProtein,
+} from '@squonk/react-sci-components';
 
 interface IProps {}
 
