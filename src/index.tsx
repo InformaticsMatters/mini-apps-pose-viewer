@@ -2,18 +2,21 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
-import './store'; // Must be imported before hooks4redux implicitly creates a store
+import './store'; // Must be imported before hooks4redux which otherwise implicitly creates a store
 import 'resize-observer-polyfill';
-
-import { Provider } from 'hooks-for-redux';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { SquonkTheme } from '@squonk/react-sci-components';
+
+import { Provider } from 'hooks-for-redux';
 
 const render = () => {
   ReactDOM.render(
     <Provider>
-      <App />
+      <SquonkTheme>
+        <App />
+      </SquonkTheme>
     </Provider>,
     document.getElementById('root'),
   );
