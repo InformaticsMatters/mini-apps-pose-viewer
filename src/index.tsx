@@ -7,16 +7,16 @@ import 'resize-observer-polyfill';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { SquonkTheme } from '@squonk/react-sci-components';
+import { Theme } from '@squonk/mui-theme';
 
 import { Provider } from 'hooks-for-redux';
 
 const render = () => {
   ReactDOM.render(
     <Provider>
-      <SquonkTheme>
+      <Theme>
         <App />
-      </SquonkTheme>
+      </Theme>
     </Provider>,
     document.getElementById('root'),
   );

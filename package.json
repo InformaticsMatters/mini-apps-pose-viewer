@@ -1,38 +1,22 @@
 {
   "name": "pose-viewer",
   "version": "0.0.0",
-  "private": false,
+  "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "@react-keycloak/web": "^2.1.4",
-    "@rehooks/component-size": "^1.0.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "hooks-for-redux": "^1.2.2",
     "keycloak-js": "^11.0.2",
     "lodash": "^4.17.19",
-    "material-ui-color": "^0.4.4",
-    "material-ui-dropzone": "^3.4.0",
-    "ngl": "^0.10.4",
-    "plotly.js": "^1.54.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-draggable": "^4.4.3",
-    "react-plotly": "^1.0.0",
-    "react-plotly.js": "^2.4.0",
-    "react-smooth-dnd": "^0.11.1",
-    "react-stonecutter": "^0.3.10",
-    "react-storage-hooks": "^4.0.1",
-    "react-swipeable-views": "^0.13.9",
     "redux-devtools-extension": "^2.13.8",
     "resize-observer-polyfill": "^1.5.1",
     "styled-components": "^5.2.0"
-  },
-  "resolutions": {
-    "styled-components": "5.2.0"
   },
   "scripts": {
     "start": "BROWSER=none react-app-rewired start",
@@ -57,7 +41,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.157",
-    "@types/pako": "^1.0.1",
     "@types/plotly.js": "^1.50.15",
     "@types/react": "^16.9.41",
     "@types/react-dom": "^16.9.8",
@@ -69,7 +52,7 @@
     "customize-cra": "^1.0.0",
     "prettier": "^2.1.2",
     "react-app-rewired": "^2.1.6",
-    "react-scripts": "3.4.1",
+    "react-scripts": "^3.4.3",
     "typescript": "3.8.3"
   }
 }
