@@ -17,20 +17,17 @@
     "material-ui-color": "^0.4.4",
     "material-ui-dropzone": "^3.4.0",
     "ngl": "^0.10.4",
-    "pako": "^1.0.11",
     "plotly.js": "^1.54.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
     "react-plotly": "^1.0.0",
     "react-plotly.js": "^2.4.0",
-    "react-scripts": "3.4.1",
     "react-smooth-dnd": "^0.11.1",
     "react-stonecutter": "^0.3.10",
     "react-storage-hooks": "^4.0.1",
     "react-swipeable-views": "^0.13.9",
     "redux-devtools-extension": "^2.13.8",
-    "remotedev-server": "^0.3.1",
     "resize-observer-polyfill": "^1.5.1",
     "styled-components": "^5.2.0"
   },
@@ -38,10 +35,10 @@
     "styled-components": "5.2.0"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "BROWSER=none react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -59,7 +56,6 @@
     ]
   },
   "devDependencies": {
-    "typescript": "3.8.3",
     "@types/lodash": "^4.14.157",
     "@types/pako": "^1.0.1",
     "@types/plotly.js": "^1.50.15",
@@ -69,6 +65,11 @@
     "@types/react-swipeable-views": "^0.13.0",
     "@types/styled-components": "^5.1.1",
     "@types/webpack-env": "^1.15.2",
-    "prettier": "^2.1.2"
+    "babel-plugin-transform-imports": "^2.0.0",
+    "customize-cra": "^1.0.0",
+    "prettier": "^2.1.2",
+    "react-app-rewired": "^2.1.6",
+    "react-scripts": "3.4.1",
+    "typescript": "3.8.3"
   }
 }
