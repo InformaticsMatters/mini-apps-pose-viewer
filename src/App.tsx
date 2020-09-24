@@ -3,12 +3,11 @@ import React from 'react';
 import './App.css';
 
 import Keycloak, { KeycloakError, KeycloakInitOptions } from 'keycloak-js';
-
 import styled from 'styled-components';
 
 import { ButtonGroup, Divider as MuiDivider } from '@material-ui/core';
 import { KeycloakEvent, KeycloakProvider, KeycloakTokens, useKeycloak } from '@react-keycloak/web';
-import { DataTierAPI } from '@squonk/data-tier-services';
+import { DataTierAPI } from '@squonk/data-tier-client';
 import {
   AccordionView,
   CardView,
@@ -44,11 +43,11 @@ const App = () => {
   keycloakCache.tokens?.token && DataTierAPI.setToken(keycloakCache.tokens.token);
 
   const onKeycloakEvent = (event: KeycloakEvent, error: KeycloakError | undefined) => {
-    console.log(event, error);
+    process.env.NODE_ENV === 'development' && console.log(event, error);
   };
 
   const onKeycloakTokens = (tokens: KeycloakTokens) => {
-    console.log('onKeycloakTokens', tokens);
+    process.env.NODE_ENV === 'development' && console.log('onKeycloakTokens', tokens);
     DataTierAPI.setToken(tokens.token);
     setKeycloakCache({ tokens, authenticated: true });
   };

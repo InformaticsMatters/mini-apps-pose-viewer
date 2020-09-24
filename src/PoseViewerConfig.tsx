@@ -3,7 +3,7 @@ import React from 'react';
 import isEqual from 'lodash/isEqual';
 
 import { ButtonProps, Typography } from '@material-ui/core';
-import { DataTierAPI, MIMETypes } from '@squonk/data-tier-services';
+import { DataTierAPI, MIMETypes } from '@squonk/data-tier-client';
 import {
   CardActionsState,
   cardActionsStore,
