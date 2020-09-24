@@ -30,7 +30,7 @@ services:
 env:
   global:
   - NAMESPACE=informaticsmatters
-  - IMAGE=im-mini-apps
+  - IMAGE=mini-apps-pose-viewer
   # The origin of the AWX trigger code
   - TRIGGER_ORIGIN=https://raw.githubusercontent.com/informaticsmatters/trigger-awx/1.0.2
   # The name of the AWX Job Template to run to deploy the application...
