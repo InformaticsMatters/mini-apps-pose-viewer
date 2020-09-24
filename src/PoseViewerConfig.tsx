@@ -63,37 +63,59 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
       const values = Object.entries(mol.values);
       let valid = true;
       for (let config of configs ?? []) {
-        const [, value] = values.find(([name]) => config.name === name)!;
-        if (config.dtype !== dTypes.TEXT) {
-          const numericValue = parseFloat(value);
-          if (isNaN(numericValue)) {
-            valid = false;
-            break;
-          }
+        const pair = values.find(([name]) => config.name === name);
+        if (pair !== undefined) {
+          const [, value] = pair;
+          if (config.dtype !== dTypes.TEXT) {
+            const numericValue = parseFloat(value);
+            if (isNaN(numericValue)) {
+              valid = false;
+              break;
+            }
 
-          if (config?.min !== undefined && numericValue < config.min) {
-            valid = false;
-            break;
+            if (config?.min !== undefined && numericValue < config.min) {
+              valid = false;
+              break;
+            }
+            if (config?.max !== undefined && numericValue > config.max) {
+              valid = false;
+              break;
+            }
+            if (!valid) break;
           }
-          if (config?.max !== undefined && numericValue > config.max) {
-            valid = false;
-            break;
-          }
-          if (!valid) break;
         }
       }
 
       if (valid)
         molecules.push({
           id: totalParsed,
-          fields: values.map(([name, value]) => {
-            const numericValue = parseFloat(value);
-            if (isNaN(numericValue)) {
-              return { name, nickname: name, value };
-            } else {
-              return { name, nickname: name, value: numericValue };
-            }
-          }),
+          // fields: values.map(([name, value]) => {
+          //   const numericValue = parseFloat(value);
+          //   if (isNaN(numericValue)) {
+          //     if (value === undefined) {
+          //       return { name, nickname: name, value: null };
+          //     } else {
+          //       return { name, nickname: name, value };
+          //     }
+          //   } else {
+          //     return { name, nickname: name, value: numericValue };
+          //   }
+          // }),
+          fields:
+            configs?.map(({ name }) => {
+              const value = values.find(([n]) => n === name);
+              if (value === undefined) {
+                return { name, nickname: name, value: null };
+              } else {
+                const [, v] = value;
+                const numericValue = parseFloat(v);
+                if (isNaN(numericValue)) {
+                  return { name, nickname: name, value: v };
+                } else {
+                  return { name, nickname: name, value: numericValue };
+                }
+              }
+            }) ?? [],
           molFile: mol.molecule.molblock ?? '', // TODO: handle missing molblock with display of error msg
         });
       totalParsed++;
@@ -112,6 +134,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
   } catch (error) {
     console.info({ error });
     const err = error as Error;
+    console.error(err);
     if (err.message) {
       setMoleculesErrorMessage(err.message || 'An unknown error occurred');
     }

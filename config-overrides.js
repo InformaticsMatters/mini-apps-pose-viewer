@@ -18,4 +18,9 @@ module.exports = override(
   addWebpackAlias({
     '@react-keycloak/web': path.resolve(path.join(__dirname, './node_modules/@react-keycloak/web')),
   }),
+  addWebpackAlias({
+    '@squonk/data-tier-client': path.resolve(
+      path.join(__dirname, './node_modules/@squonk/data-tier-client'),
+    ),
+  }),
 );
