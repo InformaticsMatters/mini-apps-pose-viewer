@@ -89,18 +89,6 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
       if (valid)
         molecules.push({
           id: totalParsed,
-          // fields: values.map(([name, value]) => {
-          //   const numericValue = parseFloat(value);
-          //   if (isNaN(numericValue)) {
-          //     if (value === undefined) {
-          //       return { name, nickname: name, value: null };
-          //     } else {
-          //       return { name, nickname: name, value };
-          //     }
-          //   } else {
-          //     return { name, nickname: name, value: numericValue };
-          //   }
-          // }),
           fields:
             configs?.map(({ name }) => {
               const value = values.find(([n]) => n === name);
