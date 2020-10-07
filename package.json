@@ -15,7 +15,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "hooks-for-redux": "^1.2.2",
-    "keycloak-js": "^11.0.2",
+    "keycloak-js": "^10.0.2",
     "lodash": "^4.17.19",
     "material-ui-color": "^0.4.6",
     "material-ui-dropzone": "^3.5.0",
