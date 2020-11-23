@@ -5,11 +5,14 @@ import './index.css';
 import './store'; // Must be imported before hooks4redux which otherwise implicitly creates a store
 import 'resize-observer-polyfill';
 
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { Provider } from 'hooks-for-redux';
+
 import { Theme } from '@squonk/mui-theme';
 
-import { Provider } from 'hooks-for-redux';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+
+// Render
 
 const render = () => {
   ReactDOM.render(

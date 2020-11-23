@@ -2,6 +2,7 @@ import React from 'react';
 
 import './App.css';
 
+import appSettings from 'appSettings';
 import Keycloak, { KeycloakError, KeycloakInitOptions } from 'keycloak-js';
 import styled from 'styled-components';
 
@@ -22,6 +23,9 @@ import {
 } from '@squonk/react-sci-components';
 
 import PoseViewerConfig from './PoseViewerConfig';
+
+// Configuration
+DataTierAPI.setURI(appSettings.DATA_TIER_SERVER);
 
 // Auth
 const keycloak = Keycloak('./keycloak.json');

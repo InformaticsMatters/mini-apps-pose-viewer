@@ -1633,10 +1633,10 @@
   resolved "https://registry.yarnpkg.com/@sheerun/mutationobserver-shim/-/mutationobserver-shim-0.3.3.tgz#5405ee8e444ed212db44e79351f0c70a582aae25"
   integrity sha512-DetpxZw1fzPD5xUBrIAoplLChO2VB8DlL5Gg+I1IR9b2wPqYIca2WSUxL5g1vLeR4MsQq1NeWriXAVffV+U1Fw==
 
-"@squonk/data-tier-client@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@squonk/data-tier-client/-/data-tier-client-0.1.5.tgz#6acab026743dcfb65839fbd0d267c97c2cdcc790"
-  integrity sha512-R4+XPuYBFv/Ud3b6p2jTZ5AqErfXmCeivYGV2ua/D4256rOwDtAumXyPvps8N31FrCVjFiT33KYhIOXp6HIkKA==
+"@squonk/data-tier-client@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@squonk/data-tier-client/-/data-tier-client-0.1.9.tgz#308e10039ee0c6fbc0ca5335962d0d750411f023"
+  integrity sha512-4dzVJrEB8REna3PEUqt3nnSm3ofduIMNSLQt7rVvGzxEFY4MH4kTIqp+FsM32W50nq1O6AQYhG7w49cV61+KpA==
   dependencies:
     axios "^0.20.0"
 
@@ -1648,10 +1648,10 @@
     "@material-ui/core" "^4.10.0"
     styled-components "^5.2.0"
 
-"@squonk/react-sci-components@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@squonk/react-sci-components/-/react-sci-components-0.1.8.tgz#75fea0560e84ebde8547b3534037071aa1e8f382"
-  integrity sha512-58+BJqRBEGO3UIoe8Q27reYMmm8GYdWblVAyLKjcK/5hVbZw1HsdCokdKH40Fzf2ZiUAv1GUmSn0Ox20zxOASQ==
+"@squonk/react-sci-components@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@squonk/react-sci-components/-/react-sci-components-0.1.9.tgz#6e664a6f3196289fcd316227062ab2c43f6d70d8"
+  integrity sha512-W6/EMkL2rVZpfeFBgQTuJrRx2nM6LZpGhQjJARwkhlfbzOAgVTHUSW3se6FbgKrt2F743FUJZIPlRAAVAFVj1A==
   dependencies:
     lodash "^4.17.20"
     lodash-es "^4.17.15"
