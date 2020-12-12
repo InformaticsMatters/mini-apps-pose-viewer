@@ -1648,10 +1648,10 @@
     "@material-ui/core" "^4.10.0"
     styled-components "^5.2.0"
 
-"@squonk/react-sci-components@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@squonk/react-sci-components/-/react-sci-components-0.1.9.tgz#6e664a6f3196289fcd316227062ab2c43f6d70d8"
-  integrity sha512-W6/EMkL2rVZpfeFBgQTuJrRx2nM6LZpGhQjJARwkhlfbzOAgVTHUSW3se6FbgKrt2F743FUJZIPlRAAVAFVj1A==
+"@squonk/react-sci-components@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@squonk/react-sci-components/-/react-sci-components-0.1.10.tgz#cc786e601da359f2791d7be26fa3653d4bb5e15c"
+  integrity sha512-gmboizFZP/21ikDAqpDjrYfPmkWgQ/SgCWUXJkCaZmr+OU57EzYXq6PPSanPKVftdHSkAIVdUOre9otQtm+twg==
   dependencies:
     lodash "^4.17.20"
     lodash-es "^4.17.15"
