@@ -58,34 +58,36 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
     const molecules: Molecule[] = [];
     let totalParsed = 0;
+
     for (const mol of dataset) {
       if (maxRecords !== undefined && molecules.length >= maxRecords) break;
       const values = Object.entries(mol.values);
+
       let valid = true;
       for (let config of configs ?? []) {
         const pair = values.find(([name]) => config.name === name);
-        if (pair !== undefined) {
-          const [, value] = pair;
-          if (config.dtype !== dTypes.TEXT) {
-            const numericValue = parseFloat(value);
-            if (isNaN(numericValue)) {
-              valid = false;
-              break;
-            }
+        // The dataset isn't guaranteed to have the value for this config
+        const value = pair === undefined ? undefined : pair[1];
 
-            if (config?.min !== undefined && numericValue < config.min) {
-              valid = false;
-              break;
-            }
-            if (config?.max !== undefined && numericValue > config.max) {
-              valid = false;
-              break;
-            }
-            if (!valid) break;
+        // If the value type is numeric check against the filters
+        if (config.dtype !== dTypes.TEXT) {
+          const numericValue = parseFloat(value ?? '');
+
+          // Nan occurs for non-numeric strings, empty strings & undefined
+          if (isNaN(numericValue)) {
+            valid = false;
+            break;
           }
-        } else {
-          valid = false;
-          break;
+
+          // Each filter must be applied separately
+          if (config?.min !== undefined && numericValue < config.min) {
+            valid = false;
+            break;
+          }
+          if (config?.max !== undefined && numericValue > config.max) {
+            valid = false;
+            break;
+          }
         }
       }
 
@@ -109,6 +111,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
             }) ?? [],
           molFile: mol.molecule.molblock ?? '', // TODO: handle missing molblock with display of error msg
         });
+
       totalParsed++;
     }
 
