@@ -74,17 +74,18 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
           const numericValue = parseFloat(value ?? '');
 
           // Nan occurs for non-numeric strings, empty strings & undefined
-          if (isNaN(numericValue)) {
+          const hasNumericFilter = config.min !== undefined || config.max !== undefined;
+          if (isNaN(numericValue) && hasNumericFilter) {
             valid = false;
             break;
           }
 
           // Each filter must be applied separately
-          if (config?.min !== undefined && numericValue < config.min) {
+          if (config.min !== undefined && numericValue < config.min) {
             valid = false;
             break;
           }
-          if (config?.max !== undefined && numericValue > config.max) {
+          if (config.max !== undefined && numericValue > config.max) {
             valid = false;
             break;
           }
