@@ -83,6 +83,9 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
             }
             if (!valid) break;
           }
+        } else {
+          valid = false;
+          break;
         }
       }
 
