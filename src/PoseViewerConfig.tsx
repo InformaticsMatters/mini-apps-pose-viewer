@@ -67,7 +67,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
       for (let config of configs ?? []) {
         const pair = values.find(([name]) => config.name === name);
         // The dataset isn't guaranteed to have the value for this config
-        const value = pair === undefined ? undefined : pair[1];
+        const value = pair?.[1];
 
         // If the value type is numeric check against the filters
         if (config.dtype !== dTypes.TEXT) {
