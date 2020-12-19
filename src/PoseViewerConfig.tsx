@@ -8,7 +8,10 @@ import {
   CardActionsState,
   cardActionsStore,
   CardViewConfig,
+  CField,
   DataLoader,
+  deselectAllWithoutColour,
+  disableCards,
   dTypes,
   mergeNewMoleculesState,
   Molecule,
@@ -16,8 +19,8 @@ import {
   MultiPage,
   plotSelectionStore,
   resetCardActions,
-  resetIdsInNGLViewer,
   resetWithNewFields,
+  retainColours,
   ScatterplotConfig,
   selectPoints,
   setDepictionField,
@@ -117,6 +120,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
     }
 
     mergeNewMoleculesState({
+      datasetId,
       molecules,
       totalParsed,
       fields: (configs ?? []).map(({ name, nickname, dtype }) => ({
@@ -147,14 +151,33 @@ stateConfig.subscribeToAllInit(async () => {
   await loadMolecules(workingSourceStore.getState());
 });
 
-moleculesStore.subscribe(() => {
+/**
+ * Card Actions Subscriptions
+ */
+
+let prevDatasetId: string | null = null;
+
+// Reset selected cards / pinned (coloured) cards when molecules are loaded
+moleculesStore.subscribe(({ datasetId, molecules }) => {
   if (!stateConfig.isStateLoadingFromFile()) {
-    resetCardActions();
+    if (prevDatasetId === datasetId) {
+      const newIds = molecules.map((m) => m.id);
+
+      retainColours(newIds);
+      disableCards();
+    } else {
+      resetCardActions();
+    }
+
+    // Keep the dataset id available to check for changes
+    prevDatasetId = datasetId;
   }
 });
+
+// Only reset the selected molecules in the card view when a new selection is made
 plotSelectionStore.subscribe(() => {
   if (!stateConfig.isStateLoadingFromFile()) {
-    resetIdsInNGLViewer();
+    deselectAllWithoutColour();
   }
 });
 
@@ -162,23 +185,29 @@ stateConfig.initializeModule('cardActions');
 
 const NUM_ENABLED_DEFAULT = 5;
 
+let prevFields: CField[] | null = null;
+
 moleculesStore.subscribe(({ fields }) => {
   if (!stateConfig.isStateLoadingFromFile()) {
     const enabledFields = fields.filter((f) => f.enabled);
-    setFields(
-      enabledFields.map(({ name, nickname, dtype }, index) => ({
-        name,
-        dtype,
-        title: nickname,
-        isVisible: index < NUM_ENABLED_DEFAULT,
-      })),
-    );
+    const newFields = enabledFields.map(({ name, nickname, dtype }, index) => ({
+      name,
+      dtype,
+      title: nickname,
+      // Use previous visibility if it exists otherwise use a default number
+      isVisible:
+        index < NUM_ENABLED_DEFAULT || !!prevFields?.find((f) => f.name === name)?.isVisible,
+    }));
+    setFields(newFields);
 
     // Use the first text field as the depiction field - best guess
     const enabledTextFields = enabledFields.filter((f) => f.dtype === dTypes.TEXT);
     if (enabledTextFields.length) {
       setDepictionField(enabledTextFields[0].name);
     }
+
+    // Keep the fields available to allow for visibility preservation between loads
+    prevFields = newFields;
   }
 });
 
@@ -186,7 +215,7 @@ stateConfig.initializeModule('cardViewConfiguration');
 
 cardActionsStore.subscribe((state: CardActionsState) => {
   if (!stateConfig.isStateLoadingFromFile()) {
-    setMoleculesToView(state.isInNGLViewerIds);
+    setMoleculesToView(state.selectedIds);
   }
 });
 
