@@ -1,6 +1,10 @@
 # The Mini-Apps Pose Viewer
 
-[![Build Status](https://travis-ci.com/InformaticsMatters/mini-apps-pose-viewer.svg?branch=master)](https://travis-ci.com/InformaticsMatters/mini-apps-pose-viewer)
+![build](https://github.com/InformaticsMatters/mini-apps-pose-viewer/workflows/build/badge.svg)
+![build latest](https://github.com/InformaticsMatters/mini-apps-pose-viewer/workflows/build%20latest/badge.svg)
+![build tag](https://github.com/InformaticsMatters/mini-apps-pose-viewer/workflows/build%20tag/badge.svg)
+![build stable](https://github.com/InformaticsMatters/mini-apps-pose-viewer/workflows/build%20stable/badge.svg)
+
 ![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/InformaticsMatters/mini-apps-pose-viewer)
 
 This allows a SDF file with docking poses and scores to be effectively analysed.
@@ -25,17 +29,14 @@ There are 4 main re-usable components:
 ## Building
 
 The application is distributed as a container image, normally built
-automatically by Travis. To understand how to build the app refer
-to the project's `.travis.yml`. Essentially it's a docker build command
-like: -
-
-    $ docker build -t informaticsmatters/mini-apps-pose-viewer:latest .
+automatically using GitLab Actions. To understand how to build the app refer
+to the project's various `.gitlab/workflows`.
 
 ## Deployment
 
-Container images are automatically deployed from Travis using Job Templates
-on our AWX server. The Job Templates are launched using scripts from our
-[Trigger AWX] project.
+Container images are automatically deployed from a GitLab Action using
+Job Templates on our AWX server. The Job Templates are launched using
+scripts that the Action downloads from our [Trigger AWX] project.
 
 ## Application versioning
 
