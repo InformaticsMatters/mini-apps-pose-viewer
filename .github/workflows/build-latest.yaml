@@ -60,7 +60,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment: awx/im-main
-    if: secrets.AWX_HOST
+    if: ${{ secrets.AWX_HOST }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
