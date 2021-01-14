@@ -73,7 +73,6 @@ jobs:
         pip install -r trigger-awx-requirements.txt
         chmod +x trigger-awx-tag.sh
     - name: Trigger AWX
-      if: ${{ secrets.AWX_HOST }}
       run: ./trigger-awx-tag.sh latest ma_image_tag "${AWX_JOB_NAME}"
       env:
         AWX_HOST: ${{ secrets.AWX_HOST }}
