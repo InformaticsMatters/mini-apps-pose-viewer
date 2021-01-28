@@ -1,6 +1,5 @@
 // Load settings that need to be defined at runtime rather than build time
 import get from 'lodash/get';
-import zipObject from 'lodash/zipObject';
 
 const VARS = ['DATA_TIER_SERVER', 'GANALYTICS_ID'];
 
