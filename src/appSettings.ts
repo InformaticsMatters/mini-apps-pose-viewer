@@ -13,13 +13,16 @@ const fetchConfig = () => {
     request.send(null);
     if (request.status === 200) {
       const config = JSON.parse(request.responseText);
-      const env = zipObject(
-        VARS,
-        VARS.map((v) => get(process.env, `REACT_APP_${v}`)),
-      );
+      let env: { [key: string]: string } = {};
+      VARS.forEach((v) => {
+        const val = get(process.env, `REACT_APP_${v}`);
+        if (val !== undefined) {
+          env[v] = val;
+        }
+      });
       return {
-        ...env,
         ...config,
+        ...env,
       };
     }
   } catch (error) {
