@@ -1,7 +1,7 @@
 // Load settings that need to be defined at runtime rather than build time
 import get from 'lodash/get';
 
-const VARS = ['DATA_TIER_SERVER', 'GANALYTICS_ID'];
+const VARS = ['DATA_MANAGER_API_SERVER', 'GANALYTICS_ID'];
 
 const fetchConfig = () => {
   try {

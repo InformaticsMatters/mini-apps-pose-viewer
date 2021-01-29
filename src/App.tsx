@@ -25,7 +25,7 @@ import {
 import PoseViewerConfig from './PoseViewerConfig';
 
 // Configuration
-DataTierAPI.setURI(appSettings.DATA_TIER_SERVER);
+DataTierAPI.setURI(appSettings.DATA_MANAGER_API_SERVER);
 
 // Auth
 const keycloak = Keycloak(process.env.PUBLIC_URL + '/keycloak.json');
