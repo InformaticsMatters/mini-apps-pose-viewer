@@ -45,10 +45,36 @@ within the Dockerfile. If the `tag` build argument is not defined the version
 of the application is `0.0.0`.
 
 The CI/CD process in Travis sets the tag to the prevailing git tag.
-So, to build and push version `1.0.0` tag the repository with `1.0.0`. 
+So, to build and push version `1.0.0` tag the repository with `1.0.0`.
 
->   As a consequence you **MUST NOT** adjust the version line in the
+> As a consequence you **MUST NOT** adjust the version line in the
+
     package.json file.
+
+## Development Alongside the [component library](https://github.com/InformaticsMatters/react-sci-components)
+
+Currently the best way to develop apps alongside the component library, `squonk-theme` and `data-tier-client` is to
+
+1. Clone the `react-sci-components` repo,
+2. Clone the app into the `/packages` directory,
+3. Run `lerna link` in the root of `react-sci-components`
+4. In terminal(s) run `yarn start` inside of the package(s) that are going to be developed
+
+Optionally, ensure the app packages in your VSCode workspace are listed first as VSCode current [doesn't handle subrepos that well](https://github.com/microsoft/vscode/issues/37947). For example:
+
+```json
+"folders": [
+    {
+        "path": "packages/pose-viewer"
+    },
+    {
+        "path": "packages/fragnet-ui"
+    },
+    {
+        "path": "."
+    },
+],
+```
 
 ---
 
