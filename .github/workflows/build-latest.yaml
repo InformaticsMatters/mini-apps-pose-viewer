@@ -58,7 +58,7 @@ jobs:
     - name: Trigger AWX
       uses: informaticsmatters/trigger-awx-action@v1
       with:
-        template: Pose Viewer - staging
+        template: Pose Viewer -staging-
         template-host: ${{ secrets.AWX_HOST }}
         template-user: ${{ secrets.AWX_USER }}
         template-user-password: ${{ secrets.AWX_USER_PASSWORD }}
