@@ -1,44 +1,46 @@
 import React from 'react';
 
-import isEqual from 'lodash/isEqual';
-
-import { ButtonProps, Typography } from '@material-ui/core';
-import { DataTierAPI, MIMETypes } from '@squonk/data-tier-client';
+import type { ButtonProps } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
+import type { CardActionsState, CField } from 'components/cardView';
 import {
-  CardActionsState,
   cardActionsStore,
   CardViewConfig,
-  CField,
-  DataLoader,
   deselectAllWithoutColour,
   disableCards,
-  dTypes,
-  mergeNewMoleculesState,
-  Molecule,
-  moleculesStore,
-  MultiPage,
-  plotSelectionStore,
   resetCardActions,
-  resetWithNewFields,
   retainColours,
-  ScatterplotConfig,
-  selectPoints,
   setDepictionField,
   setFields,
+} from 'components/cardView';
+import { MultiPage } from 'components/configuration';
+import type { Source, WorkingSourceState } from 'components/dataLoader';
+import { DataLoader, dTypes, workingSourceStore } from 'components/dataLoader';
+import { setMoleculesToView } from 'components/nglViewer';
+import {
+  plotSelectionStore,
+  resetWithNewFields,
+  ScatterplotConfig,
+  selectPoints,
+} from 'components/scatterplot';
+import isEqual from 'lodash/isEqual';
+import type { Molecule } from 'modules/molecules/molecules';
+import {
+  mergeNewMoleculesState,
+  moleculesStore,
   setIsMoleculesLoading,
-  setIsProteinLoading,
   setMoleculesErrorMessage,
-  setMoleculesToView,
+  setTotalParsed,
+  useMolecules,
+} from 'modules/molecules/molecules';
+import {
+  setIsProteinLoading,
   setProtein,
   setProteinErrorMessage,
-  setTotalParsed,
-  Source,
-  stateConfig,
-  useMolecules,
   useProtein,
-  WorkingSourceState,
-  workingSourceStore,
-} from '@squonk/react-sci-components';
+} from 'modules/protein/protein';
+import stateConfig from 'modules/state/stateConfig';
+// import { DataTierAPI, MIMETypes } from '@squonk/data-tier-client';
 
 /**
  * Subscriptions
@@ -57,7 +59,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
   try {
     setMoleculesErrorMessage(null);
     setIsMoleculesLoading(true);
-    const dataset = await DataTierAPI.downloadDatasetFromProjectAsJSON(projectId, datasetId);
+    const dataset = [] as any[];
 
     const molecules: Molecule[] = [];
     let totalParsed = 0;
@@ -67,10 +69,10 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
       const values = Object.entries(mol.values);
 
       let valid = true;
-      for (let config of configs ?? []) {
+      for (const config of configs ?? []) {
         const pair = values.find(([name]) => config.name === name);
         // The dataset isn't guaranteed to have the value for this config
-        const value = pair?.[1];
+        const value = pair?.[1] as string;
 
         // If the value type is numeric check against the filters
         if (config.dtype !== dTypes.TEXT) {
@@ -103,15 +105,13 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
               const value = values.find(([n]) => n === name);
               if (value === undefined) {
                 return { name, nickname: name, value: null };
-              } else {
-                const [, v] = value;
-                const numericValue = parseFloat(v);
-                if (isNaN(numericValue)) {
-                  return { name, nickname: name, value: v };
-                } else {
-                  return { name, nickname: name, value: numericValue };
-                }
               }
+              const v = value[1] as string;
+              const numericValue = parseFloat(v);
+              if (isNaN(numericValue)) {
+                return { name, nickname: name, value: v };
+              }
+              return { name, nickname: name, value: numericValue };
             }) ?? [],
           molFile: mol.molecule.molblock ?? '', // TODO: handle missing molblock with display of error msg
         });
@@ -250,7 +250,7 @@ const loadProtein = async (workingSources: WorkingSourceState) => {
   try {
     setIsProteinLoading(true);
     setProteinErrorMessage(null);
-    const dataset = await DataTierAPI.downloadDatasetFromProjectAsNative(projectId, datasetId);
+    const dataset = '';
     setProtein({ definition: dataset });
   } catch (error) {
     const err = error as Error;
@@ -270,52 +270,45 @@ stateConfig.subscribeToAllInit(async () => {
   await loadProtein(workingSourceStore.getState());
 });
 
-interface IProps {}
-
 /**
  * Configuration modal for the Pose Viewer Mini App
  * This is a hard-coded example of a mini-app
  */
-const PoseViewerConfig = ({ ...buttonProps }: IProps & ButtonProps) => {
+const PoseViewerConfig = ({ ...buttonProps }: ButtonProps) => {
   // Card View / Scatterplot / DataLoader
-  const {
-    molecules,
-    fields,
-    totalParsed,
-    isMoleculesLoading,
-    moleculesErrorMessage,
-  } = useMolecules();
+  const { molecules, fields, totalParsed, isMoleculesLoading, moleculesErrorMessage } =
+    useMolecules();
   const { isProteinLoading, proteinErrorMessage } = useProtein();
 
   return (
     <MultiPage
-      width={'52rem'}
+      buttonProps={buttonProps}
       height={'80vh'}
       titles={['PDB Source', 'SDF Sources', 'Scatterplot', 'Card View']}
-      buttonProps={buttonProps}
+      width={'52rem'}
     >
       {/* PDB */}
       <DataLoader
-        loading={isProteinLoading}
-        error={proteinErrorMessage}
-        title="pdb"
-        fileType={MIMETypes.PDB}
         enableConfigs={false}
+        error={proteinErrorMessage}
+        fileType={'MIMETypes.PDB'}
+        loading={isProteinLoading}
+        title="pdb"
       />
       {/* SDF */}
       <DataLoader
-        loading={isMoleculesLoading}
-        error={moleculesErrorMessage}
-        title="sdf"
-        fileType={MIMETypes.SDF}
         enableConfigs
-        totalParsed={totalParsed}
+        error={moleculesErrorMessage}
+        fileType={'MIMETypes.SDF'}
+        loading={isMoleculesLoading}
         moleculesKept={molecules.length}
+        title="sdf"
+        totalParsed={totalParsed}
       />
       {/* Scatterplot */}
-      <ScatterplotConfig title="Scatterplot" fields={fields} />
+      <ScatterplotConfig fields={fields} title="Scatterplot" />
       {/* Card View */}
-      {!!molecules.length ? (
+      {molecules.length ? (
         <CardViewConfig title="Card View" />
       ) : (
         <Typography>No molecules are loaded yet</Typography>
