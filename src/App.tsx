@@ -25,7 +25,6 @@ import './App.css';
 // DM Client Config
 const queryClient = new QueryClient();
 
-console.log(appSettings.DATA_MANAGER_API_SERVER);
 setBaseUrl(appSettings.DATA_MANAGER_API_SERVER);
 
 // Auth

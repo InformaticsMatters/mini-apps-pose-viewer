@@ -1,8 +1,7 @@
-export const getProject = (projects: any[], projectId?: string) =>
-  projects.find((project) => project.projectId === projectId);
+import type { ProjectDetail } from '@squonk/data-manager-client';
 
-export const getDataset = (datasets: any[], datasetId?: string) =>
-  datasets.find((dataset) => dataset.datasetId === datasetId);
+export const getProject = (projects: ProjectDetail[], projectId?: string) =>
+  projects.find((project) => project.project_id === projectId);
 
 const getFieldFromForm = (form: HTMLFormElement) => (fieldName: string) => {
   const min = form[`${fieldName}-min`]?.value;

@@ -136,7 +136,7 @@ const ScatterPlot = ({ width, colourBar = false }: IProps) => {
           // Waiting for @types fix for plotly here to remove the assertion
           points &&
             selectPoints(
-              points.map((p) => (p as typeof p & { customdata: Datum }).customdata) as number[],
+              points.map((p) => (p as typeof p & { customdata: Datum }).customdata) as string[],
             );
         }}
       />

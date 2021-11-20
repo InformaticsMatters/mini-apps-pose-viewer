@@ -7,7 +7,7 @@ import { BACKGROUND_COLOR, NGL_PARAMS } from './constants';
 export interface NGLLocalState {
   nglOrientations: any;
   viewParams: any;
-  molsInView: number[];
+  molsInView: string[];
   firstTimeShowLigand: boolean;
 }
 
@@ -41,7 +41,7 @@ export const [
     toSetDiv[div_id] = orientation;
     return { ...state, nglOrientations: toSetDiv };
   },
-  setMoleculesToView: (state, molecules: number[]) => {
+  setMoleculesToView: (state, molecules: string[]) => {
     return { ...state, molsInView: molecules ? molecules : [] };
   },
   setFirstTimeShowLigand: (state, firstTime: boolean) => {

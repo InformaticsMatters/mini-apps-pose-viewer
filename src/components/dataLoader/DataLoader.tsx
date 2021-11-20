@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 
 import type { ProjectDetail } from '@squonk/data-manager-client';
 import { useGetProjects } from '@squonk/data-manager-client/project';
+import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
+import { FileSelector } from '@squonk/react-sci-components/FileSelector';
 
 import {
   Button,
@@ -13,37 +15,29 @@ import {
   Typography,
 } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { useGetDatasetSchema } from 'hooks/useGetDatasetSchema';
 import styled from 'styled-components';
 
 import type { SourceConfig } from './configs';
+import { addConfig } from './configs';
 import { useSourceConfigs } from './configs';
 import FieldConfiguration from './FieldConfiguration';
-import { useWorkingSource } from './workingSource';
+import { getDataFromForm, getProject } from './utils';
+import { setWorkingSource, useWorkingSource } from './workingSource';
 
 interface IProps {
   title: string;
-  fileType: string;
+  mimeType?: string;
   enableConfigs: boolean;
   loading?: boolean;
   error?: string | null;
   totalParsed?: number;
   moleculesKept?: number;
 }
-/**
- * Component for loading and configuring sdf and pdb data files
- * @param name the use for the file selected by this data loader
- * @param fileType the type of file to allow selection of
- * @param enableConfigs whether to show the config inputs when a dataset is loaded.
- * Typically sdf use this feature but not pdb datasets.
- * @param loading whether data is currently being loaded, controls the Load button
- * loading indicator.
- * @param error The main error message to display.
- * @param totalParsed the total number of molecules parsed including those filtered out
- * @param moleculesKept the total number of molecules parsed excluding those filtered out
- */
+
 const DataLoader: React.FC<IProps> = ({
   title,
-  fileType,
+  mimeType,
   enableConfigs,
   loading,
   error,
@@ -58,6 +52,7 @@ const DataLoader: React.FC<IProps> = ({
   const currentSources = useWorkingSource();
   const currentSource =
     selectedConfig ?? currentSources.find((slice) => slice.title === title)?.state ?? null;
+  // console.log(currentSources);
 
   const {
     data: projectsData,
@@ -65,54 +60,48 @@ const DataLoader: React.FC<IProps> = ({
     error: projectsError,
   } = useGetProjects();
   const projects = projectsData?.projects;
-  const [currentProject, setCurrentProject] = useState<ProjectDetail | undefined>();
+  // eslint-disable-next-line prefer-const
+  let [currentProject, setCurrentProject] = useState<ProjectDetail | undefined>();
+  currentProject = currentProject ?? getProject(projects ?? [], currentSource?.projectId);
 
-  // const { isProjectsLoading, projects, projectsError } = useProjects();
-  // currentProject = currentProject ?? getProject(projects, currentSource?.projectId) ?? null;
-  // let { isDatasetsLoading, datasets, datasetsError } = useDatasets(currentProject);
-  // let [currentDataset, setCurrentDataset] = useState<Dataset | null>(null);
-  // currentDataset = currentDataset ?? getDataset(datasets, currentSource?.datasetId) ?? null;
-  // const { isMetadataLoading, metadata, metadataError } = useDatasetMeta(
-  //   currentProject,
-  //   currentDataset,
-  // );
+  const [currentFile, setCurrentFile] = useState<SavedFile>();
 
-  const metadata = [] as any[];
-  let datasets = [] as any[];
-  const isDatasetsLoading = true;
-  const isMetadataLoading = true;
-  const datasetsError = undefined;
-  const metadataError = undefined;
-  const currentDataset: Record<string, string> | null = null;
+  const { isSchemaLoading, schema, schemaError } = useGetDatasetSchema(
+    currentProject?.project_id,
+    currentFile,
+  );
 
-  datasets = datasets.filter(({ type }) => type === fileType);
+  const metadata = Object.entries(schema ?? {}).map(([key, value]) => ({
+    name: key,
+    type: value.type,
+  }));
 
-  // const handleAction = (mode: string) => () => {
-  //   const datasetId = currentDataset?.datasetId;
-  //   const projectId = currentProject?.projectId;
-  //   if (datasetId !== undefined && projectId !== undefined) {
-  //     const formData =
-  //       enableConfigs && metadata !== null
-  //         ? getDataFromForm(
-  //             formRef.current,
-  //             metadata.map(({ name }) => name),
-  //           )
-  //         : {};
-  //     if (mode === 'load') {
-  //       setWorkingSource({
-  //         title,
-  //         state: { ...formData, projectId, datasetId },
-  //       });
-  //     } else if (mode === 'save' && enableConfigs) {
-  //       const configName = formRef.current['configName'].value as string;
-  //       configName && addConfig({ datasetId, projectId, configName, ...formData });
-  //     }
-  //   }
-  // };
+  const handleAction = (mode: string) => () => {
+    const filePath = currentFile?.path;
+    const projectId = currentProject?.project_id;
+    if (filePath !== undefined && projectId !== undefined) {
+      const formData =
+        enableConfigs && schema !== undefined
+          ? getDataFromForm(
+              formRef.current,
+              metadata.map(({ name }) => name),
+            )
+          : {};
+      if (mode === 'load') {
+        setWorkingSource({
+          title,
+          state: { ...formData, projectId, filePath },
+        });
+      } else if (mode === 'save' && enableConfigs) {
+        const configName = formRef.current['configName'].value as string;
+        configName && addConfig({ filePath, projectId, configName, ...formData });
+      }
+    }
+  };
 
   return (
     <form
-      key={`${currentSource?.datasetId}-${selectedConfig?.id}`}
+      key={`${currentSource?.filePath}-${selectedConfig?.id}`}
       // update defaultValue of fields when currentSource changes
       ref={formRef}
     >
@@ -132,33 +121,24 @@ const DataLoader: React.FC<IProps> = ({
               variant="outlined"
             />
           )}
-          value={currentProject}
+          value={currentProject ?? null}
           onChange={(_, newProject) => {
-            // setSelectedConfig(null);
-            // setCurrentDataset(null);
+            setSelectedConfig(null);
+            setCurrentFile(undefined);
             setCurrentProject(newProject ?? undefined);
           }}
         />
 
-        <Autocomplete
-          fullWidth
-          getOptionLabel={(option) => option.name}
-          id="dataset-selection"
-          loading={isDatasetsLoading}
-          options={datasets}
-          renderInput={(params) => (
-            <TextField
-              color="secondary"
-              {...params}
-              error={!!datasetsError}
-              label={datasetsError || 'Select dataset'}
-              variant="outlined"
-            />
-          )}
-          value={currentDataset}
-          onChange={(_, newDataset) => {
-            setSelectedConfig(null);
-            // setCurrentDataset(newDataset);
+        <FileSelector
+          disabled={!currentProject}
+          extensions={mimeType === 'chemical/x-pdb' ? ['.pdb'] : ['.json']}
+          mimeTypes={mimeType !== undefined ? [mimeType] : []}
+          multiple={false}
+          projectId={currentProject?.project_id}
+          targetType="file"
+          value={currentFile !== undefined ? [currentFile] : []}
+          onSelect={(savedFiles) => {
+            setCurrentFile(savedFiles[0]);
           }}
         />
       </SourcesWrapper>
@@ -185,9 +165,9 @@ const DataLoader: React.FC<IProps> = ({
         )}
         <Button
           color="primary"
-          disabled={currentDataset === null || isMetadataLoading || loading}
+          disabled={currentFile === undefined || isSchemaLoading || loading}
           variant="contained"
-          // onClick={handleAction('load')}
+          onClick={handleAction('load')}
         >
           Load
           {loading && <Progress size={24} />}
@@ -200,14 +180,14 @@ const DataLoader: React.FC<IProps> = ({
 
           <FieldsWrapper>
             <Typography variant="h6">Field Configuration</Typography>
-            {isMetadataLoading ? (
+            {isSchemaLoading ? (
               <LinearProgress color="secondary" />
-            ) : !!metadataError || !!error ? (
+            ) : !!schemaError || !!error ? (
               <>
-                {metadataError && <Typography>{metadataError}</Typography>}
+                {schemaError && <Typography>{schemaError.error}</Typography>}
                 {error && <Typography>{error}</Typography>}
               </>
-            ) : metadata === null ? (
+            ) : schemaError === null ? (
               <Typography>Load a data source to apply filters/transforms</Typography>
             ) : (
               <FieldConfiguration currentSource={currentSource} metadata={metadata} />
@@ -221,8 +201,7 @@ const DataLoader: React.FC<IProps> = ({
               freeSolo
               handleHomeEndKeys
               getOptionLabel={(option) => option.configName}
-              // options={configs.filter((config) => config.datasetId === currentDataset?.datasetId)}
-              options={[]}
+              options={configs.filter((config) => config.filePath === currentFile?.path)}
               renderInput={(params) => (
                 <TextField
                   {...params}

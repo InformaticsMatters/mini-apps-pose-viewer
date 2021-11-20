@@ -26,8 +26,8 @@ export interface FieldConfig {
 }
 
 export interface Source {
-  projectId: string; // Need the project to access the dataset through the API otherwise the user needs editor access to the dataset which isn't guaranteed
-  datasetId: string;
+  projectId: string;
+  filePath: string;
   maxRecords?: number;
   configs?: FieldConfig[];
 }

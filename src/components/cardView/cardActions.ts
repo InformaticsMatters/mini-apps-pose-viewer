@@ -13,14 +13,14 @@ import { resolveState } from '../../modules/state/stateResolver';
 
 // Types
 
-export type Colour = { id: number; colour: string };
+export type Colour = { id: string; colour: string };
 
 export interface CardActionsState {
-  selectedIds: number[];
+  selectedIds: string[];
   colours: Colour[];
 }
 
-type SetColourPayload = { id: number; colour: string };
+type SetColourPayload = { id: string; colour: string };
 
 const initialState: CardActionsState = {
   selectedIds: [],
@@ -29,14 +29,14 @@ const initialState: CardActionsState = {
 
 // Utils
 
-const toggleIdInArray = (array: number[], id: number) => {
+const toggleIdInArray = (array: string[], id: string) => {
   if (array.includes(id)) {
     return (array = array.filter((id_) => id_ !== id));
   }
   return (array = [...array, id]);
 };
 
-export const getColour = (id: number, colours: Colour[]) => {
+export const getColour = (id: string, colours: Colour[]) => {
   return colours.find((colour) => colour.id === id)?.colour;
 };
 
@@ -86,7 +86,7 @@ export const [
    * @param prevState previous value of state
    * @param payload colours of this id (or array of) to be removed from state
    */
-  clearColours: ({ colours, ...rest }, payload?: number | number[]) => {
+  clearColours: ({ colours, ...rest }, payload?: string | string[]) => {
     if (payload !== undefined) {
       // Convert union payload into array parse-able by one algorithm
       const ids = [payload].flat();
@@ -109,7 +109,7 @@ export const [
    * @param state previous value of state
    * @param payload id (or array of) removed from the selected cards array
    */
-  disableCards: ({ selectedIds, ...rest }, payload?: number | number[]) => {
+  disableCards: ({ selectedIds, ...rest }, payload?: string | string[]) => {
     if (payload !== undefined) {
       const ids = [payload].flat();
       return {
@@ -126,7 +126,7 @@ export const [
    * @param prevState previous value of state
    * @param id id of card to toggle its selection
    */
-  toggleSelected: ({ selectedIds, ...rest }, id: number) => {
+  toggleSelected: ({ selectedIds, ...rest }, id: string) => {
     // TODO: need to make this work for array of ids too
     return { ...rest, selectedIds: toggleIdInArray(selectedIds, id) };
   },
@@ -151,7 +151,7 @@ export const [
    * @param state previous value of state
    * @param payload id (or array of) of card(s) that should be kept if a colour is set
    */
-  retainColours: ({ colours, ...rest }, payload: number | number[]) => {
+  retainColours: ({ colours, ...rest }, payload: string | string[]) => {
     const ids = [payload].flat();
 
     return { ...rest, colours: colours.filter(({ id }) => ids.includes(id)) };

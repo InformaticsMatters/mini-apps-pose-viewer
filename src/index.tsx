@@ -1,10 +1,10 @@
+import './store'; // Must be imported before hooks4redux which otherwise implicitly creates a store
+import 'resize-observer-polyfill';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { Provider } from 'hooks-for-redux';
-
-import './store'; // Must be imported before hooks4redux which otherwise implicitly creates a store
-import 'resize-observer-polyfill';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';

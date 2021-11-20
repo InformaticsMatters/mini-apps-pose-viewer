@@ -11,7 +11,7 @@ export interface Field {
 }
 
 export interface Molecule {
-  id: number;
+  id: string;
   fields: Field[];
   molFile: string;
 }
@@ -24,7 +24,7 @@ export interface FieldMeta {
 }
 
 export interface MoleculesState {
-  datasetId: string | null;
+  filePath: string | null;
   molecules: Molecule[];
   totalParsed?: number;
   fields: FieldMeta[];
@@ -33,7 +33,7 @@ export interface MoleculesState {
 }
 
 const initialState: MoleculesState = {
-  datasetId: null,
+  filePath: null,
   molecules: [],
   fields: [],
   isMoleculesLoading: false,

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { getProjectFile } from '@squonk/data-manager-client/project';
+
 import type { ButtonProps } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import type { CardActionsState, CField } from 'components/cardView';
@@ -40,7 +42,6 @@ import {
   useProtein,
 } from 'modules/protein/protein';
 import stateConfig from 'modules/state/stateConfig';
-// import { DataTierAPI, MIMETypes } from '@squonk/data-tier-client';
 
 /**
  * Subscriptions
@@ -48,23 +49,47 @@ import stateConfig from 'modules/state/stateConfig';
 
 let prevMoleculesSource: Source | null = null;
 
+interface DatasetItem {
+  uuid: string;
+  values: Record<string, unknown>;
+  molecule: {
+    molBlock: string;
+  };
+}
+
 const loadMolecules = async (workingSources: WorkingSourceState) => {
   const state = workingSources.find((slice) => slice.title === 'sdf')?.state ?? null;
   if (state === null || isEqual(prevMoleculesSource, state)) return;
 
   prevMoleculesSource = state;
 
-  const { projectId, datasetId, maxRecords, configs } = state;
+  const { projectId, filePath, maxRecords, configs } = state;
+
+  const parts = filePath.split('/');
+  const fileName = parts.pop() ?? '';
+  const path = parts.join('/') || '/';
 
   try {
     setMoleculesErrorMessage(null);
     setIsMoleculesLoading(true);
-    const dataset = [] as any[];
 
-    const molecules: Molecule[] = [];
+    const makeRequest = async () => {
+      if (projectId && fileName) {
+        return await getProjectFile(projectId, {
+          file: fileName,
+          path,
+        });
+      }
+      return undefined;
+    };
+
+    const file = await makeRequest();
+
+    const datasetItems: DatasetItem[] = JSON.parse((await file?.text()) ?? '[]');
     let totalParsed = 0;
+    const molecules: Molecule[] = [];
 
-    for (const mol of dataset) {
+    for (const mol of datasetItems) {
       if (maxRecords !== undefined && molecules.length >= maxRecords) break;
       const values = Object.entries(mol.values);
 
@@ -99,7 +124,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
       if (valid)
         molecules.push({
-          id: totalParsed,
+          id: mol.uuid,
           fields:
             configs?.map(({ name }) => {
               const value = values.find(([n]) => n === name);
@@ -113,14 +138,14 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
               }
               return { name, nickname: name, value: numericValue };
             }) ?? [],
-          molFile: mol.molecule.molblock ?? '', // TODO: handle missing molblock with display of error msg
+          molFile: mol.molecule.molBlock,
         });
 
       totalParsed++;
     }
 
     mergeNewMoleculesState({
-      datasetId,
+      filePath,
       molecules,
       totalParsed,
       fields: (configs ?? []).map(({ name, nickname, dtype }) => ({
@@ -155,12 +180,12 @@ stateConfig.subscribeToAllInit(async () => {
  * Card Actions Subscriptions
  */
 
-let prevDatasetId: string | null = null;
+let prevFilePath: string | null = null;
 
 // Reset selected cards / pinned (coloured) cards when molecules are loaded
-moleculesStore.subscribe(({ datasetId, molecules }) => {
+moleculesStore.subscribe(({ filePath, molecules }) => {
   if (!stateConfig.isStateLoadingFromFile()) {
-    if (prevDatasetId === datasetId) {
+    if (prevFilePath === filePath) {
       const newIds = molecules.map((m) => m.id);
 
       retainColours(newIds);
@@ -170,7 +195,7 @@ moleculesStore.subscribe(({ datasetId, molecules }) => {
     }
 
     // Keep the dataset id available to check for changes
-    prevDatasetId = datasetId;
+    prevFilePath = filePath;
   }
 });
 
@@ -245,13 +270,29 @@ const loadProtein = async (workingSources: WorkingSourceState) => {
 
   prevProteinSource = state;
 
-  const { projectId, datasetId } = state;
+  const { projectId, filePath } = state;
+
+  const parts = filePath.split('/');
+  const fileName = parts.pop() ?? '';
+  const path = parts.join('/') || '/';
 
   try {
     setIsProteinLoading(true);
     setProteinErrorMessage(null);
-    const dataset = '';
-    setProtein({ definition: dataset });
+
+    const makeRequest = async () => {
+      if (projectId && fileName) {
+        return (await getProjectFile(projectId, {
+          file: fileName,
+          path,
+        })) as unknown as string;
+      }
+      return '';
+    };
+
+    const file = await makeRequest();
+
+    setProtein({ definition: file });
   } catch (error) {
     const err = error as Error;
     if (err.message) {
@@ -291,15 +332,14 @@ const PoseViewerConfig = ({ ...buttonProps }: ButtonProps) => {
       <DataLoader
         enableConfigs={false}
         error={proteinErrorMessage}
-        fileType={'MIMETypes.PDB'}
         loading={isProteinLoading}
+        mimeType="chemical/x-pdb"
         title="pdb"
       />
       {/* SDF */}
       <DataLoader
         enableConfigs
         error={moleculesErrorMessage}
-        fileType={'MIMETypes.SDF'}
         loading={isMoleculesLoading}
         moleculesKept={molecules.length}
         title="sdf"

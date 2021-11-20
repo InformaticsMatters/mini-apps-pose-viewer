@@ -21,7 +21,7 @@ import {
 import { showInteractions, showLigands, showProtein } from './renderingObjects';
 
 export interface NGLMolecule {
-  id: number;
+  id: string;
   mol: Molecule;
   color: string;
 }
@@ -32,7 +32,7 @@ interface ViewListItem {
 }
 
 const getMoleculeObjects = (
-  molIds: number[],
+  molIds: string[],
   colors: Colour[],
   molecules: Molecule[],
 ): NGLMolecule[] => {
