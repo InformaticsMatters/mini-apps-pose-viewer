@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-
+import type { Error } from '@squonk/data-manager-client';
 import { useGetProjectFile } from '@squonk/data-manager-client/project';
 import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
+
+import type { AxiosError } from 'axios';
 
 export interface SchemaField {
   description: string;
@@ -24,10 +25,10 @@ export const useGetDatasetSchema = (
   const path = parts?.join('/') || '/';
 
   const {
-    data,
+    data: schema,
     isLoading: isSchemaLoading,
     error: schemaError,
-  } = useGetProjectFile<Blob>(
+  } = useGetProjectFile<Schema, AxiosError<Error>>(
     projectId ?? '',
     {
       file: fileName,
@@ -38,19 +39,9 @@ export const useGetDatasetSchema = (
     },
   );
 
-  const [schema, setSchema] = useState<Schema>();
-
-  useEffect(() => {
-    const func = async () => {
-      const text = await data?.text();
-      text && setSchema(JSON.parse(text).detail);
-    };
-    func();
-  }, [data]);
-
   return {
     isSchemaLoading,
     schema: schema?.fields,
-    schemaError: undefined as any,
+    schemaError,
   };
 };

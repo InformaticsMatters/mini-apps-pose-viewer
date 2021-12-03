@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { useRedux } from 'hooks-for-redux';
 
-import type { dTypes } from '../../components/dataLoader/workingSource';
+import type { SchemaType } from '../../components/dataLoader/workingSource';
 import { resolveState } from '../state/stateResolver';
 
 export interface Field {
@@ -17,7 +17,7 @@ export interface Molecule {
 }
 
 export interface FieldMeta {
-  dtype: dTypes;
+  dtype: SchemaType;
   name: string;
   nickname: string;
   enabled: boolean;

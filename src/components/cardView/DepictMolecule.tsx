@@ -32,8 +32,8 @@ const DepictMolecule = (props: Readonly<IProps>) => {
     noStereo = false,
     mcs = '',
     mcsColor = '0xFFAAAAAA',
-    fragnet_server = 'https://fragnet.informaticsmatters.com',
-    depict_route = '/fragnet-depict/moldepict',
+    fragnet_server = 'https://squonk.informaticsmatters.org',
+    depict_route = '/fragnet-depict-api/fragnet-depict/moldepict',
   } = props;
 
   const params = {

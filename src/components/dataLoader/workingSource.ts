@@ -8,17 +8,13 @@ import { useRedux } from 'hooks-for-redux';
 import { initializeModule } from '../../modules/state/stateConfig';
 import { resolveState } from '../../modules/state/stateResolver';
 
-export enum dTypes {
-  TEXT = 'text',
-  FLOAT = 'float',
-  INT = 'int',
-}
+export type SchemaType = 'string' | 'number' | 'integer' | 'array' | 'boolean' | 'null';
 
 export interface FieldConfig {
   name: string;
   nickname?: string;
   rank?: 'asc' | 'desc'; // TODO: make ENUM
-  dtype: dTypes;
+  dtype: SchemaType;
   transform?: string;
   defaultValue?: number | string;
   min?: number;

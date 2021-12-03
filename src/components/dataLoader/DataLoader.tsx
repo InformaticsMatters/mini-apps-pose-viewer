@@ -52,7 +52,6 @@ const DataLoader: React.FC<IProps> = ({
   const currentSources = useWorkingSource();
   const currentSource =
     selectedConfig ?? currentSources.find((slice) => slice.title === title)?.state ?? null;
-  // console.log(currentSources);
 
   const {
     data: projectsData,
@@ -184,11 +183,9 @@ const DataLoader: React.FC<IProps> = ({
               <LinearProgress color="secondary" />
             ) : !!schemaError || !!error ? (
               <>
-                {schemaError && <Typography>{schemaError.error}</Typography>}
+                {schemaError && <Typography>{schemaError.message}</Typography>}
                 {error && <Typography>{error}</Typography>}
               </>
-            ) : schemaError === null ? (
-              <Typography>Load a data source to apply filters/transforms</Typography>
             ) : (
               <FieldConfiguration currentSource={currentSource} metadata={metadata} />
             )}

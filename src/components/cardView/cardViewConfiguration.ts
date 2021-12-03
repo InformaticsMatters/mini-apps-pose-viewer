@@ -4,7 +4,7 @@ import type { DropResult } from 'react-smooth-dnd';
 import { useRedux } from 'hooks-for-redux';
 
 import { resolveState } from '../../modules/state/stateResolver';
-import type { dTypes } from '../dataLoader/workingSource';
+import type { SchemaType } from '../dataLoader/workingSource';
 
 /**
  * Types
@@ -12,7 +12,7 @@ import type { dTypes } from '../dataLoader/workingSource';
 export interface CField {
   name: string;
   title: string;
-  dtype: dTypes;
+  dtype: SchemaType;
   isVisible: boolean;
 }
 

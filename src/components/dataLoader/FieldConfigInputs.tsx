@@ -67,15 +67,15 @@ const FieldConfigInputs = ({ name, type, config }: IProps) => {
           dtype
         </InputLabel>
         <Select
-          defaultValue={config?.dtype ?? type ?? 'text'}
+          defaultValue={config?.dtype ?? type}
           label="Rank"
           labelId={`dtype-${name}`}
           name={`${name}-dtype`}
           onChange={handleDtypeChange}
         >
-          <MenuItem value="float">float</MenuItem>
-          <MenuItem value="int">int</MenuItem>
-          <MenuItem value="text">text</MenuItem>
+          <MenuItem value="number">Number</MenuItem>
+          <MenuItem value="integer">Integer</MenuItem>
+          <MenuItem value="string">String</MenuItem>
         </Select>
       </FormControl>
       {/* <FormControl disabled size="small" variant="outlined">

@@ -28,10 +28,13 @@ const CalculationsTable = ({
               value = +value.toFixed(2); // Round to 2 sig fig and remove pad.
             }
             const displayName = calcs?.[name] ?? name;
-
             return (
               <TableRow key={index}>
-                <CellTh component="th" fontSize={fontSize} tableWidth={tableWidth}>
+                <CellTh
+                  component="th"
+                  fontSize={fontSize}
+                  style={{ maxWidth: tableWidth ? `calc(${tableWidth - 32}px - 35px)` : '5rem' }}
+                >
                   <Tooltip arrow title={displayName}>
                     <span>{displayName}</span>
                   </Tooltip>
@@ -68,8 +71,7 @@ const CellTd = styled(Cell)`
   padding-left: ${({ theme }) => theme.spacing(1)}px;
 `;
 
-const CellTh = styled(Cell)<{ tableWidth: number | undefined }>`
-  max-width: ${({ tableWidth }) => (tableWidth ? `calc(${tableWidth - 32}px - 35px)` : '5rem')};
+const CellTh = styled(Cell)`
   overflow: hidden;
   text-overflow: ellipsis;
 `;

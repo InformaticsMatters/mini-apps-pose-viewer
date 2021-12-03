@@ -105,6 +105,10 @@ const CardView = ({ width }: IProps) => {
     root: { height: cardHeight },
   })();
 
+  const ms = displayMolecules
+    .sort(moleculeSorter(actions))
+    .splice(0, CARDS_PER_PAGE * loadMoreCount);
+
   return (
     <GridWrapper>
       <Grid
@@ -118,63 +122,60 @@ const CardView = ({ width }: IProps) => {
         gutterWidth={GUTTER_SIZE}
         itemHeight={cardHeight}
       >
-        {displayMolecules
-          .sort(moleculeSorter(actions))
-          .splice(0, CARDS_PER_PAGE * loadMoreCount)
-          .map(({ id, fields: fieldValues }) => {
-            let smiles = fieldValues.find((field) => field.name === fieldForDepiction)?.value;
-            if (typeof smiles !== 'string') {
-              smiles = '';
-            }
-            fieldValues.sort(
-              (a, b) =>
-                fields.findIndex((f) => f.name === a.name) -
-                fields.findIndex((f) => f.name === b.name),
-            );
-            const selected = selectedIds.includes(id);
-            return (
-              <span key={id} style={{ width: cardWidth, height: cardHeight }}>
-                <MolCard
-                  actions={(hover) => {
-                    const colour = colours.find((c) => c.id === id);
-                    return (
-                      <Grow in={hover || colour !== undefined}>
-                        <span>
-                          <ColourPicker
-                            clearColour={() => clearColours(id)}
-                            colours={palette}
-                            enabled={!!hover}
-                            iconColour={colour?.colour}
-                            setColour={(colour) => setColours({ id, colour })}
-                          />
-                        </span>
-                      </Grow>
-                    );
-                  }}
-                  actionsProps={{ className: classes.actionsRoot }}
-                  bgColor={selected ? theme.palette.grey[100] : undefined}
-                  classes={{ root: cardStyles.root }}
-                  depictHeight={imageSize}
-                  depictWidth={imageSize}
-                  elevation={selected ? 10 : undefined}
-                  smiles={smiles}
-                  onClick={() => toggleSelected(id)}
-                >
-                  <CalculationsTable
-                    fontSize={'0.6rem'}
-                    properties={fieldValues
-                      .filter(({ name }) => enabledFields.includes(name))
-                      .map(({ name, nickname, value }) => ({
-                        nickname,
-                        value: value ?? '',
-                        name: moleculesFields.find((f) => f.name === name)?.nickname ?? name,
-                      }))}
-                    tableWidth={cardWidth}
-                  />
-                </MolCard>
-              </span>
-            );
-          })}
+        {ms.map(({ id, fields: fieldValues }, index) => {
+          let smiles = fieldValues.find((field) => field.name === fieldForDepiction)?.value;
+          if (typeof smiles !== 'string') {
+            smiles = '';
+          }
+          fieldValues.sort(
+            (a, b) =>
+              fields.findIndex((f) => f.name === a.name) -
+              fields.findIndex((f) => f.name === b.name),
+          );
+          const selected = selectedIds.includes(id);
+          return (
+            <div key={index} style={{ width: cardWidth, height: cardHeight }}>
+              <MolCard
+                actions={(hover) => {
+                  const colour = colours.find((c) => c.id === id);
+                  return (
+                    <Grow in={hover || colour !== undefined}>
+                      <span>
+                        <ColourPicker
+                          clearColour={() => clearColours(id)}
+                          colours={palette}
+                          enabled={!!hover}
+                          iconColour={colour?.colour}
+                          setColour={(colour) => setColours({ id, colour })}
+                        />
+                      </span>
+                    </Grow>
+                  );
+                }}
+                actionsProps={{ className: classes.actionsRoot }}
+                bgColor={selected ? theme.palette.grey[100] : undefined}
+                classes={{ root: cardStyles.root }}
+                depictHeight={imageSize}
+                depictWidth={imageSize}
+                elevation={selected ? 10 : undefined}
+                smiles={smiles}
+                onClick={() => toggleSelected(id)}
+              >
+                <CalculationsTable
+                  fontSize={'0.6rem'}
+                  properties={fieldValues
+                    .filter(({ name }) => enabledFields.includes(name))
+                    .map(({ name, nickname, value }) => ({
+                      nickname,
+                      value: value ?? '',
+                      name: moleculesFields.find((f) => f.name === name)?.nickname ?? name,
+                    }))}
+                  tableWidth={cardWidth}
+                />
+              </MolCard>
+            </div>
+          );
+        })}
       </Grid>
       {!!(CARDS_PER_PAGE * loadMoreCount < selectedMoleculesIds.length) && (
         <Button color="default" variant="text" onClick={() => setLoadMoreCount(loadMoreCount + 1)}>

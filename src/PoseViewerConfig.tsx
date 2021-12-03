@@ -17,7 +17,7 @@ import {
 } from 'components/cardView';
 import { MultiPage } from 'components/configuration';
 import type { Source, WorkingSourceState } from 'components/dataLoader';
-import { DataLoader, dTypes, workingSourceStore } from 'components/dataLoader';
+import { DataLoader, workingSourceStore } from 'components/dataLoader';
 import { setMoleculesToView } from 'components/nglViewer';
 import {
   plotSelectionStore,
@@ -75,17 +75,16 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
     const makeRequest = async () => {
       if (projectId && fileName) {
-        return await getProjectFile(projectId, {
+        return (await getProjectFile(projectId, {
           file: fileName,
           path,
-        });
+        })) as unknown as DatasetItem[];
       }
       return undefined;
     };
 
-    const file = await makeRequest();
+    const datasetItems = (await makeRequest()) ?? [];
 
-    const datasetItems: DatasetItem[] = JSON.parse((await file?.text()) ?? '[]');
     let totalParsed = 0;
     const molecules: Molecule[] = [];
 
@@ -97,10 +96,10 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
       for (const config of configs ?? []) {
         const pair = values.find(([name]) => config.name === name);
         // The dataset isn't guaranteed to have the value for this config
-        const value = pair?.[1] as string;
+        const value = pair?.[1] as string | undefined;
 
         // If the value type is numeric check against the filters
-        if (config.dtype !== dTypes.TEXT) {
+        if (config.dtype !== 'string') {
           const numericValue = parseFloat(value ?? '');
 
           // Nan occurs for non-numeric strings, empty strings & undefined
@@ -124,7 +123,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
       if (valid)
         molecules.push({
-          id: mol.uuid,
+          id: totalParsed.toString(),
           fields:
             configs?.map(({ name }) => {
               const value = values.find(([n]) => n === name);
@@ -226,7 +225,7 @@ moleculesStore.subscribe(({ fields }) => {
     setFields(newFields);
 
     // Use the first text field as the depiction field - best guess
-    const enabledTextFields = enabledFields.filter((f) => f.dtype === dTypes.TEXT);
+    const enabledTextFields = enabledFields.filter((f) => f.dtype === 'string');
     if (enabledTextFields.length) {
       setDepictionField(enabledTextFields[0].name);
     }
