@@ -1,26 +1,17 @@
-const { useBabelRc, override, addWebpackAlias } = require('customize-cra');
+const { override, addWebpackAlias } = require('customize-cra');
 const path = require('path');
 
 module.exports = override(
-  useBabelRc(),
   addWebpackAlias({
-    'styled-components': path.resolve(path.join(__dirname, './node_modules/styled-components')),
+    react: path.resolve(path.join(__dirname, './node_modules/react')),
+  }),
+  addWebpackAlias({
+    'react-query': path.resolve(path.join(__dirname, './node_modules/react-query')),
   }),
   addWebpackAlias({
     '@material-ui/core': path.resolve(path.join(__dirname, './node_modules/@material-ui/core')),
   }),
   addWebpackAlias({
-    'hooks-for-redux': path.resolve(path.join(__dirname, './node_modules/hooks-for-redux')),
-  }),
-  addWebpackAlias({
-    react: path.resolve(path.join(__dirname, './node_modules/react')),
-  }),
-  addWebpackAlias({
-    '@react-keycloak/web': path.resolve(path.join(__dirname, './node_modules/@react-keycloak/web')),
-  }),
-  addWebpackAlias({
-    '@squonk/data-tier-client': path.resolve(
-      path.join(__dirname, './node_modules/@squonk/data-tier-client'),
-    ),
+    '@squonk/data-manager-client': path.resolve(path.join(__dirname, './node_modules/@squonk/data-manager-client')),
   }),
 );

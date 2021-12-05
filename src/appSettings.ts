@@ -5,14 +5,14 @@ const VARS = ['DATA_MANAGER_API_SERVER', 'GANALYTICS_ID'];
 
 const fetchConfig = () => {
   try {
-    var request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     // Loads the config.json file in the public folder
     // ! Should find a better way to do this
     request.open('GET', process.env.PUBLIC_URL + '/config.json', false); // `false` makes the request synchronous
     request.send(null);
     if (request.status === 200) {
       const config = JSON.parse(request.responseText);
-      let env: { [key: string]: string } = {};
+      const env: { [key: string]: string } = {};
       VARS.forEach((v) => {
         const val = get(process.env, `REACT_APP_${v}`);
         if (val !== undefined) {

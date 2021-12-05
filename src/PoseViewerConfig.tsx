@@ -1,44 +1,47 @@
 import React from 'react';
 
-import isEqual from 'lodash/isEqual';
+import { getProjectFile } from '@squonk/data-manager-client/project';
 
-import { ButtonProps, Typography } from '@material-ui/core';
-import { DataTierAPI, MIMETypes } from '@squonk/data-tier-client';
+import type { ButtonProps } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
+import type { CardActionsState, CField } from 'components/cardView';
 import {
-  CardActionsState,
   cardActionsStore,
   CardViewConfig,
-  CField,
-  DataLoader,
   deselectAllWithoutColour,
   disableCards,
-  dTypes,
-  mergeNewMoleculesState,
-  Molecule,
-  moleculesStore,
-  MultiPage,
-  plotSelectionStore,
   resetCardActions,
-  resetWithNewFields,
   retainColours,
-  ScatterplotConfig,
-  selectPoints,
   setDepictionField,
   setFields,
+} from 'components/cardView';
+import { MultiPage } from 'components/configuration';
+import type { Source, WorkingSourceState } from 'components/dataLoader';
+import { DataLoader, workingSourceStore } from 'components/dataLoader';
+import { setMoleculesToView } from 'components/nglViewer';
+import {
+  plotSelectionStore,
+  resetWithNewFields,
+  ScatterplotConfig,
+  selectPoints,
+} from 'components/scatterplot';
+import isEqual from 'lodash/isEqual';
+import type { Molecule } from 'modules/molecules/molecules';
+import {
+  mergeNewMoleculesState,
+  moleculesStore,
   setIsMoleculesLoading,
-  setIsProteinLoading,
   setMoleculesErrorMessage,
-  setMoleculesToView,
+  setTotalParsed,
+  useMolecules,
+} from 'modules/molecules/molecules';
+import {
+  setIsProteinLoading,
   setProtein,
   setProteinErrorMessage,
-  setTotalParsed,
-  Source,
-  stateConfig,
-  useMolecules,
   useProtein,
-  WorkingSourceState,
-  workingSourceStore,
-} from '@squonk/react-sci-components';
+} from 'modules/protein/protein';
+import stateConfig from 'modules/state/stateConfig';
 
 /**
  * Subscriptions
@@ -46,34 +49,57 @@ import {
 
 let prevMoleculesSource: Source | null = null;
 
+interface DatasetItem {
+  uuid: string;
+  values: Record<string, unknown>;
+  molecule: {
+    molBlock: string;
+  };
+}
+
 const loadMolecules = async (workingSources: WorkingSourceState) => {
   const state = workingSources.find((slice) => slice.title === 'sdf')?.state ?? null;
   if (state === null || isEqual(prevMoleculesSource, state)) return;
 
   prevMoleculesSource = state;
 
-  const { projectId, datasetId, maxRecords, configs } = state;
+  const { projectId, filePath, maxRecords, configs } = state;
+
+  const parts = filePath.split('/');
+  const fileName = parts.pop() ?? '';
+  const path = parts.join('/') || '/';
 
   try {
     setMoleculesErrorMessage(null);
     setIsMoleculesLoading(true);
-    const dataset = await DataTierAPI.downloadDatasetFromProjectAsJSON(projectId, datasetId);
 
-    const molecules: Molecule[] = [];
+    const makeRequest = async () => {
+      if (projectId && fileName) {
+        return (await getProjectFile(projectId, {
+          file: fileName,
+          path,
+        })) as unknown as DatasetItem[];
+      }
+      return undefined;
+    };
+
+    const datasetItems = (await makeRequest()) ?? [];
+
     let totalParsed = 0;
+    const molecules: Molecule[] = [];
 
-    for (const mol of dataset) {
+    for (const mol of datasetItems) {
       if (maxRecords !== undefined && molecules.length >= maxRecords) break;
       const values = Object.entries(mol.values);
 
       let valid = true;
-      for (let config of configs ?? []) {
+      for (const config of configs ?? []) {
         const pair = values.find(([name]) => config.name === name);
         // The dataset isn't guaranteed to have the value for this config
-        const value = pair?.[1];
+        const value = pair?.[1] as string | undefined;
 
         // If the value type is numeric check against the filters
-        if (config.dtype !== dTypes.TEXT) {
+        if (config.dtype !== 'string') {
           const numericValue = parseFloat(value ?? '');
 
           // Nan occurs for non-numeric strings, empty strings & undefined
@@ -97,30 +123,28 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
       if (valid)
         molecules.push({
-          id: totalParsed,
+          id: totalParsed.toString(),
           fields:
             configs?.map(({ name }) => {
               const value = values.find(([n]) => n === name);
               if (value === undefined) {
                 return { name, nickname: name, value: null };
-              } else {
-                const [, v] = value;
-                const numericValue = parseFloat(v);
-                if (isNaN(numericValue)) {
-                  return { name, nickname: name, value: v };
-                } else {
-                  return { name, nickname: name, value: numericValue };
-                }
               }
+              const v = value[1] as string;
+              const numericValue = parseFloat(v);
+              if (isNaN(numericValue)) {
+                return { name, nickname: name, value: v };
+              }
+              return { name, nickname: name, value: numericValue };
             }) ?? [],
-          molFile: mol.molecule.molblock ?? '', // TODO: handle missing molblock with display of error msg
+          molFile: mol.molecule.molBlock,
         });
 
       totalParsed++;
     }
 
     mergeNewMoleculesState({
-      datasetId,
+      filePath,
       molecules,
       totalParsed,
       fields: (configs ?? []).map(({ name, nickname, dtype }) => ({
@@ -155,12 +179,12 @@ stateConfig.subscribeToAllInit(async () => {
  * Card Actions Subscriptions
  */
 
-let prevDatasetId: string | null = null;
+let prevFilePath: string | null = null;
 
 // Reset selected cards / pinned (coloured) cards when molecules are loaded
-moleculesStore.subscribe(({ datasetId, molecules }) => {
+moleculesStore.subscribe(({ filePath, molecules }) => {
   if (!stateConfig.isStateLoadingFromFile()) {
-    if (prevDatasetId === datasetId) {
+    if (prevFilePath === filePath) {
       const newIds = molecules.map((m) => m.id);
 
       retainColours(newIds);
@@ -170,7 +194,7 @@ moleculesStore.subscribe(({ datasetId, molecules }) => {
     }
 
     // Keep the dataset id available to check for changes
-    prevDatasetId = datasetId;
+    prevFilePath = filePath;
   }
 });
 
@@ -201,7 +225,7 @@ moleculesStore.subscribe(({ fields }) => {
     setFields(newFields);
 
     // Use the first text field as the depiction field - best guess
-    const enabledTextFields = enabledFields.filter((f) => f.dtype === dTypes.TEXT);
+    const enabledTextFields = enabledFields.filter((f) => f.dtype === 'string');
     if (enabledTextFields.length) {
       setDepictionField(enabledTextFields[0].name);
     }
@@ -245,13 +269,29 @@ const loadProtein = async (workingSources: WorkingSourceState) => {
 
   prevProteinSource = state;
 
-  const { projectId, datasetId } = state;
+  const { projectId, filePath } = state;
+
+  const parts = filePath.split('/');
+  const fileName = parts.pop() ?? '';
+  const path = parts.join('/') || '/';
 
   try {
     setIsProteinLoading(true);
     setProteinErrorMessage(null);
-    const dataset = await DataTierAPI.downloadDatasetFromProjectAsNative(projectId, datasetId);
-    setProtein({ definition: dataset });
+
+    const makeRequest = async () => {
+      if (projectId && fileName) {
+        return (await getProjectFile(projectId, {
+          file: fileName,
+          path,
+        })) as unknown as string;
+      }
+      return '';
+    };
+
+    const file = await makeRequest();
+
+    setProtein({ definition: file });
   } catch (error) {
     const err = error as Error;
     if (err.message) {
@@ -270,52 +310,44 @@ stateConfig.subscribeToAllInit(async () => {
   await loadProtein(workingSourceStore.getState());
 });
 
-interface IProps {}
-
 /**
  * Configuration modal for the Pose Viewer Mini App
  * This is a hard-coded example of a mini-app
  */
-const PoseViewerConfig = ({ ...buttonProps }: IProps & ButtonProps) => {
+const PoseViewerConfig = ({ ...buttonProps }: ButtonProps) => {
   // Card View / Scatterplot / DataLoader
-  const {
-    molecules,
-    fields,
-    totalParsed,
-    isMoleculesLoading,
-    moleculesErrorMessage,
-  } = useMolecules();
+  const { molecules, fields, totalParsed, isMoleculesLoading, moleculesErrorMessage } =
+    useMolecules();
   const { isProteinLoading, proteinErrorMessage } = useProtein();
 
   return (
     <MultiPage
-      width={'52rem'}
+      buttonProps={buttonProps}
       height={'80vh'}
       titles={['PDB Source', 'SDF Sources', 'Scatterplot', 'Card View']}
-      buttonProps={buttonProps}
+      width={'52rem'}
     >
       {/* PDB */}
       <DataLoader
-        loading={isProteinLoading}
-        error={proteinErrorMessage}
-        title="pdb"
-        fileType={MIMETypes.PDB}
         enableConfigs={false}
+        error={proteinErrorMessage}
+        loading={isProteinLoading}
+        mimeType="chemical/x-pdb"
+        title="pdb"
       />
       {/* SDF */}
       <DataLoader
-        loading={isMoleculesLoading}
-        error={moleculesErrorMessage}
-        title="sdf"
-        fileType={MIMETypes.SDF}
         enableConfigs
-        totalParsed={totalParsed}
+        error={moleculesErrorMessage}
+        loading={isMoleculesLoading}
         moleculesKept={molecules.length}
+        title="sdf"
+        totalParsed={totalParsed}
       />
       {/* Scatterplot */}
-      <ScatterplotConfig title="Scatterplot" fields={fields} />
+      <ScatterplotConfig fields={fields} title="Scatterplot" />
       {/* Card View */}
-      {!!molecules.length ? (
+      {molecules.length ? (
         <CardViewConfig title="Card View" />
       ) : (
         <Typography>No molecules are loaded yet</Typography>
