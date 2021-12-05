@@ -67,7 +67,7 @@ const DataLoader: React.FC<IProps> = ({
 
   const { isSchemaLoading, schema, schemaError } = useGetDatasetSchema(
     currentProject?.project_id,
-    currentFile,
+    mimeType === 'chemical/x-pdb' ? undefined : currentFile,
   );
 
   const metadata = Object.entries(schema ?? {}).map(([key, value]) => ({
@@ -97,6 +97,8 @@ const DataLoader: React.FC<IProps> = ({
       }
     }
   };
+
+  console.log(currentFile, isSchemaLoading, loading);
 
   return (
     <form
