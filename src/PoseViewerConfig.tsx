@@ -53,7 +53,7 @@ interface DatasetItem {
   uuid: string;
   values: Record<string, unknown>;
   molecule: {
-    molBlock: string;
+    molblock: string;
   };
 }
 
@@ -137,7 +137,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
               }
               return { name, nickname: name, value: numericValue };
             }) ?? [],
-          molFile: mol.molecule.molBlock,
+          molFile: mol.molecule.molblock,
         });
 
       totalParsed++;

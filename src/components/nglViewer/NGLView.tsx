@@ -81,6 +81,7 @@ export const NglView: React.FC<IProps> = memo(({ div_id, width }) => {
   const [stage, setStage] = useState<any>(null);
   const [nglViewList, setNglViewList] = useState<ViewListItem[]>([]);
   const { molecules } = useMolecules();
+
   const { colours } = useCardActions();
   const classes = useStyles();
 
