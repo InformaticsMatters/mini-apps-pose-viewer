@@ -63,7 +63,7 @@ const DataLoader: React.FC<IProps> = ({
   let [currentProject, setCurrentProject] = useState<ProjectDetail | undefined>();
   currentProject = currentProject ?? getProject(projects ?? [], currentSource?.projectId);
 
-  const [currentFile, setCurrentFile] = useState<SavedFile>();
+  const [currentFile, setCurrentFile] = useState<SavedFile | undefined>(currentSource?.file);
 
   const { isSchemaLoading, schema, schemaError } = useGetDatasetSchema(
     currentProject?.project_id,
@@ -76,9 +76,8 @@ const DataLoader: React.FC<IProps> = ({
   }));
 
   const handleAction = (mode: string) => () => {
-    const filePath = currentFile?.path;
     const projectId = currentProject?.project_id;
-    if (filePath !== undefined && projectId !== undefined) {
+    if (currentFile !== undefined && projectId !== undefined) {
       const formData =
         enableConfigs && schema !== undefined
           ? getDataFromForm(
@@ -89,20 +88,18 @@ const DataLoader: React.FC<IProps> = ({
       if (mode === 'load') {
         setWorkingSource({
           title,
-          state: { ...formData, projectId, filePath },
+          state: { ...formData, projectId, file: currentFile },
         });
       } else if (mode === 'save' && enableConfigs) {
         const configName = formRef.current['configName'].value as string;
-        configName && addConfig({ filePath, projectId, configName, ...formData });
+        configName && addConfig({ file: currentFile, projectId, configName, ...formData });
       }
     }
   };
 
-  console.log(currentFile, isSchemaLoading, loading);
-
   return (
     <form
-      key={`${currentSource?.filePath}-${selectedConfig?.id}`}
+      key={`${currentSource?.file.path}-${selectedConfig?.id}`}
       // update defaultValue of fields when currentSource changes
       ref={formRef}
     >
@@ -200,7 +197,7 @@ const DataLoader: React.FC<IProps> = ({
               freeSolo
               handleHomeEndKeys
               getOptionLabel={(option) => option.configName}
-              options={configs.filter((config) => config.filePath === currentFile?.path)}
+              options={configs.filter((config) => config.file.path === currentFile?.path)}
               renderInput={(params) => (
                 <TextField
                   {...params}

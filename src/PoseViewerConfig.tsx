@@ -63,9 +63,9 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
 
   prevMoleculesSource = state;
 
-  const { projectId, filePath, maxRecords, configs } = state;
+  const { projectId, file, maxRecords, configs } = state;
 
-  const parts = filePath.split('/');
+  const parts = file.path.split('/');
   const fileName = parts.pop() ?? '';
   const path = parts.join('/') || '/';
 
@@ -144,7 +144,7 @@ const loadMolecules = async (workingSources: WorkingSourceState) => {
     }
 
     mergeNewMoleculesState({
-      filePath,
+      filePath: file.path,
       molecules,
       totalParsed,
       fields: (configs ?? []).map(({ name, nickname, dtype }) => ({
@@ -269,9 +269,9 @@ const loadProtein = async (workingSources: WorkingSourceState) => {
 
   prevProteinSource = state;
 
-  const { projectId, filePath } = state;
+  const { projectId, file } = state;
 
-  const parts = filePath.split('/');
+  const parts = file.path.split('/');
   const fileName = parts.pop() ?? '';
   const path = parts.join('/') || '/';
 

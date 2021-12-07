@@ -3,6 +3,8 @@
  * Redux slice for data sources and field configurations
  */
 
+import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
+
 import { useRedux } from 'hooks-for-redux';
 
 import { initializeModule } from '../../modules/state/stateConfig';
@@ -23,7 +25,7 @@ export interface FieldConfig {
 
 export interface Source {
   projectId: string;
-  filePath: string;
+  file: SavedFile;
   maxRecords?: number;
   configs?: FieldConfig[];
 }
