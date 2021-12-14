@@ -8,16 +8,14 @@ FROM node:14 AS builder
 
 WORKDIR /app
 COPY package.json ./
-COPY yarn.lock ./
+COPY pnpm-lock.yaml ./
 
-RUN yarn install \
-    --only=production \
-    --non-interactive \
-    --unsafe-perm
+RUN npm i -g pnpm@6.24.0 && \
+    pnpm i
 
 COPY . .
 
-RUN yarn build
+RUN pnpm build
 
 # Run stage
 
