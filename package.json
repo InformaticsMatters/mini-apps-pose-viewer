@@ -18,7 +18,7 @@
     "@react-keycloak/web": "^3.4.0",
     "@rehooks/component-size": "^1.0.3",
     "@squonk/data-manager-client": "0.6.15-rc.2",
-    "@squonk/react-sci-components": "2.0.0-dev.5",
+    "@squonk/react-sci-components": "2.0.0-dev.6",
     "axios": "^0.24.0",
     "hooks-for-redux": "^1.2.2",
     "keycloak-js": "^10.0.2",
