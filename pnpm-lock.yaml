@@ -8,7 +8,7 @@ specifiers:
   '@react-keycloak/web': ^3.4.0
   '@rehooks/component-size': ^1.0.3
   '@squonk/data-manager-client': 0.6.15-rc.2
-  '@squonk/react-sci-components': 2.0.0-dev.6
+  '@squonk/react-sci-components': 2.0.0-dev.14
   '@types/lodash': ^4.14.178
   '@types/plotly.js': ^1.54.17
   '@types/react': ^17.0.37
@@ -63,7 +63,7 @@ dependencies:
   '@react-keycloak/web': 3.4.0_4806bf72624c4ada88ec0c6c7b57dc24
   '@rehooks/component-size': 1.0.3_react@17.0.2
   '@squonk/data-manager-client': 0.6.15-rc.2_axios@0.24.0+react-query@3.34.2
-  '@squonk/react-sci-components': link:../../libs/react-sci-components
+  '@squonk/react-sci-components': 2.0.0-dev.14_4f7a3070d23bf5b5d5dc663ca391de23
   axios: 0.24.0
   hooks-for-redux: 1.3.1_react-dom@17.0.2+react@17.0.2
   keycloak-js: 10.0.2
@@ -3150,6 +3150,28 @@ packages:
       react-query: '>=3'
     dependencies:
       axios: 0.24.0
+      react-query: 3.34.2_react-dom@17.0.2+react@17.0.2
+    dev: false
+
+  /@squonk/react-sci-components/2.0.0-dev.14_4f7a3070d23bf5b5d5dc663ca391de23:
+    resolution: {integrity: sha512-okEOlIyFwhEGZqQ1iPZze0VOxtslwg0+lGjS6gvzWfcu+MHYcnXhGQ7S0Q+AZBmMhFueoVbbWIjyuytJ9xYVQg==}
+    peerDependencies:
+      '@material-ui/core': 4.x
+      '@material-ui/icons': 4.x
+      '@material-ui/lab': 4.x
+      '@squonk/data-manager-client': '>=0.6.2-rc.8'
+      axios: ^0.24.0
+      react: 17.0.2
+      react-dom: 17.0.2
+      react-query: ^3.32.1
+    dependencies:
+      '@material-ui/core': 4.12.3_5539cae010396b202b015f3568914e95
+      '@material-ui/icons': 4.11.2_f70bac6576f9b9b57b8e0afbfb28e421
+      '@material-ui/lab': 4.0.0-alpha.60_f70bac6576f9b9b57b8e0afbfb28e421
+      '@squonk/data-manager-client': 0.6.15-rc.2_axios@0.24.0+react-query@3.34.2
+      axios: 0.24.0
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
       react-query: 3.34.2_react-dom@17.0.2+react@17.0.2
     dev: false
 
