@@ -3,7 +3,7 @@
  * Redux slice for data sources and field configurations
  */
 
-import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
+import type { SavedFile } from '@squonk/react-sci-components';
 
 import { useRedux } from 'hooks-for-redux';
 

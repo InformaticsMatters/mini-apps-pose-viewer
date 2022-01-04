@@ -1,6 +1,6 @@
 import type { Error } from '@squonk/data-manager-client';
 import { useGetProjectFile } from '@squonk/data-manager-client/project';
-import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
+import type { SavedFile } from '@squonk/react-sci-components';
 
 import type { AxiosError } from 'axios';
 

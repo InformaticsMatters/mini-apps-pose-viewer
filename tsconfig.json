@@ -27,6 +27,8 @@
     "node_modules/@types"
   ],
   "include": [
-    "src"
+    "src",
+    "*.js",
+    ".*.js",
   ]
 }

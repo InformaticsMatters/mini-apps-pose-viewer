@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react';
 
 import type { ProjectDetail } from '@squonk/data-manager-client';
 import { useGetProjects } from '@squonk/data-manager-client/project';
-import type { SavedFile } from '@squonk/react-sci-components/FileSelector';
-import { FileSelector } from '@squonk/react-sci-components/FileSelector';
+import type { SavedFile } from '@squonk/react-sci-components';
+import { FileSelector } from '@squonk/react-sci-components';
 
 import {
   Button,
