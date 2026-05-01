@@ -4,7 +4,9 @@
  * https://github.com/dantrain/react-stonecutter/pull/46
  */
 
-declare module 'react-stonecutter' {
+declare module "react-stonecutter" {
+  import type * as React from "react";
+
   export type Coordinates = [number, number];
   export interface Layout {
     /**
@@ -22,8 +24,8 @@ declare module 'react-stonecutter' {
      */
     gridHeight: number;
   }
-  export type LengthUnit = 'px' | 'em' | 'rem';
-  export type AngleUnit = 'deg';
+  export type LengthUnit = "px" | "em" | "rem";
+  export type AngleUnit = "deg";
 
   export type Easing = string;
   export interface Easings {
@@ -136,6 +138,8 @@ declare module 'react-stonecutter' {
   }
 
   export interface CSSGridProps extends CommonGridProps {
+    children?: React.ReactNode;
+
     /**
      * Animation duration in ms. Required.
      */
@@ -190,7 +194,10 @@ declare module 'react-stonecutter' {
 
   export function makeResponsive<T>(grid: T, options: MakeResponsiveOptions): T;
 
-  export type LayoutFunction = (itemProps: unknown[], gridProps: unknown[]) => Layout;
+  export type LayoutFunction = (
+    itemProps: unknown[],
+    gridProps: unknown[],
+  ) => Layout;
   export const layout: {
     pinterest: LayoutFunction;
     simple: LayoutFunction;
